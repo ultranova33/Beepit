@@ -21,13 +21,18 @@
 
   function handleComposerEvent(event) {
     const target = event.target;
-    if (!(target instanceof HTMLElement) || !target.isContentEditable) {
+    if (!(target instanceof Element)) {
       return;
     }
 
-    window.BeepitComposer.processComposer(target);
+    const composer = target.closest("[contenteditable=\"true\"]");
+    if (!composer || !composer.isContentEditable) {
+      return;
+    }
+
+    window.BeepitComposer.processComposer(composer);
     if (event.type === "paste") {
-      window.setTimeout(() => window.BeepitComposer.sanitizeComposer(target), 0);
+      window.setTimeout(() => window.BeepitComposer.sanitizeComposer(composer), 0);
     }
   }
 
