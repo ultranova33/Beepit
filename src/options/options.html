@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beepit Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="panel">
+    <header>
+      <p class="eyebrow">WhatsApp Web companion</p>
+      <h1>Beepit settings</h1>
+      <p class="intro">Censor vowels in selected words before your text messages are sent.</p>
+    </header>
+
+    <form id="settings-form">
+      <label class="toggle-row">
+        <span><strong>Beepit enabled</strong><small>Apply censoring while typing and pasting.</small></span>
+        <input id="enabled" type="checkbox">
+      </label>
+
+      <label for="replacement">Replacement symbol</label>
+      <select id="replacement">
+        <option value="#">#</option>
+        <option value="*">*</option>
+      </select>
+
+      <label for="words">Blocked words</label>
+      <textarea id="words" rows="10" spellcheck="false" placeholder="One word per line"></textarea>
+      <p class="hint">Matching ignores case, common substitutions, punctuation, spaces, and repeated letters.</p>
+
+      <button type="submit">Save settings</button>
+      <p id="status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+  <script src="../core/settings.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

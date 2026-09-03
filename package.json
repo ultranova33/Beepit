@@ -1,0 +1,9 @@
+{
+  "name": "beepit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A local Chrome extension that censors vowels in selected WhatsApp Web text messages.",
+  "scripts": {
+    "test": "node --test tests/core.test.js"
+  }
+}
