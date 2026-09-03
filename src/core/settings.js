@@ -1,7 +1,6 @@
 (() => {
   const defaults = {
     enabled: true,
-    replacementCharacter: "#",
     blockedWords: [
       "fuck", "fucks", "fucked", "fucking", "fucker", "fuckers", "fuckface", "fuckfaces", "fuckhead", "fuckheads", "fuckwit", "fuckwits", "fuckup", "fuckups", "fuckwad", "fuckwads", "fuckboy", "fuckboys", "fuckass", "fuckasses", "fuckoff", "fuckoffs", "motherfuck", "motherfucker", "motherfuckers", "motherfucking",
       "shit", "shits", "shitty", "shitting", "shithead", "shitheads", "shitface", "shitfaces", "shitbag", "shitbags", "shitshow", "shitshows", "shitstorm", "shitstorms", "bullshit", "bullshits", "bullshitting", "horseshit", "apeshit", "shitwit", "shitwits", "shitbrain", "shitbrains", "shitforbrains",

@@ -1,21 +1,27 @@
 (() => {
   const vowels = new Set(["a", "e", "i", "o", "u"]);
 
-  function censorText(text, blockedWords, replacementCharacter = "#") {
+  function censorText(text, blockedWords) {
     const characters = Array.from(text);
     const matches = window.BeepitMatcher.findMatches(text, blockedWords);
-    const indexesToReplace = new Set();
+    const replacements = new Map();
 
     matches.forEach((match) => {
+      let vowelIndex = 0;
       match.sourceIndexes.forEach((sourceIndex) => {
         const normalized = window.BeepitNormalize.normalizeCharacter(characters[sourceIndex]);
-        if (vowels.has(normalized)) {
-          indexesToReplace.add(sourceIndex);
+        if (normalized === "s") {
+          replacements.set(sourceIndex, "$");
+        } else if (normalized === "a") {
+          replacements.set(sourceIndex, "@");
+        } else if (vowels.has(normalized)) {
+          replacements.set(sourceIndex, vowelIndex % 2 === 0 ? "#" : "*");
+          vowelIndex += 1;
         }
       });
     });
 
-    return characters.map((character, index) => indexesToReplace.has(index) ? replacementCharacter : character).join("");
+    return characters.map((character, index) => replacements.get(index) || character).join("");
   }
 
   window.BeepitCensor = { censorText };

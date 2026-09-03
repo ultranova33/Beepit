@@ -3,11 +3,12 @@
 Beepit is a local-only Chrome Manifest V3 extension that censors vowels in selected words before text messages are sent through WhatsApp Web.
 
 ```text
-shit     -> sh#t
+shit     -> $h#t
 fuck     -> f#ck
 bitch    -> b#tch
-sh1t     -> sh#t
-s.h.i.t  -> s.h.#.t
+asshole  -> @$$h#l*
+sh1t     -> $h#t
+s.h.i.t  -> $.h.#.t
 ```
 
 Beepit changes the message in the WhatsApp composer. It does not read sent message history, use WhatsApp private APIs, call a backend, or upload message content.
@@ -34,7 +35,7 @@ Composer input
 
 ### Vowel-only censoring
 
-The matcher identifies a blocked word, but the censor replaces only `a`, `e`, `i`, `o`, and `u`. Consonants, punctuation, whitespace, and the message structure remain intact. The replacement symbol is configurable as `#` or `*`.
+The matcher identifies a blocked word, but the censor replaces only its vowels. Vowels are replaced in order with alternating `#` and `*`, starting with `#`. Matched `s` or `S` becomes `$`, and matched `a` or `A` becomes `@`. Other consonants, punctuation, whitespace, and message structure remain intact.
 
 ### Unicode normalization
 
@@ -126,7 +127,7 @@ No build step is required in V1. The files in this repository are the files Chro
 
 ### Configure words
 
-Open Beepit's extension options. Add one blocked word per line, select `#` or `*`, and save. Changes apply to open WhatsApp Web tabs through local storage updates.
+Open Beepit's extension options. Add one blocked word per line and save. Vowels automatically alternate between `#` and `*`; matched `s/S` becomes `$` and `a/A` becomes `@`. Changes apply to open WhatsApp Web tabs through local storage updates.
 
 ### Use it
 
@@ -158,7 +159,7 @@ Use focused commits and add unit tests for every new normalization or matching r
 ## Roadmap
 
 - Better caret and rich-content handling across WhatsApp UI changes
-- Optional custom replacement behavior
+- Optional custom replacement patterns
 - Import and export of word lists
 - More configurable normalization rules
 - Chrome Web Store packaging and publication

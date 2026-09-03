@@ -1,13 +1,11 @@
 (() => {
   const form = document.querySelector("#settings-form");
   const enabled = document.querySelector("#enabled");
-  const replacement = document.querySelector("#replacement");
   const words = document.querySelector("#words");
   const status = document.querySelector("#status");
 
   window.BeepitSettings.getSettings().then((settings) => {
     enabled.checked = settings.enabled;
-    replacement.value = settings.replacementCharacter;
     words.value = settings.blockedWords.join("\n");
   });
 
@@ -17,7 +15,6 @@
 
     window.BeepitSettings.saveSettings({
       enabled: enabled.checked,
-      replacementCharacter: replacement.value,
       blockedWords
     }).then(() => {
       status.textContent = "Settings saved.";

@@ -14,27 +14,27 @@ global.window = global;
 const blockedWords = ["shit", "fuck", "bitch", "asshole"];
 
 function censor(text) {
-  return BeepitCensor.censorText(text, blockedWords, "#");
+  return BeepitCensor.censorText(text, blockedWords);
 }
 
 test("replaces only vowels in a matched word", () => {
-  assert.equal(censor("shit fuck bitch asshole"), "sh#t f#ck b#tch #ssh#l#");
+  assert.equal(censor("shit fuck bitch asshole"), "$h#t f#ck b#tch @$$h#l*");
 });
 
 test("matches case variations and common substitutions", () => {
-  assert.equal(censor("SHIT sh1t"), "SH#T sh#t");
+  assert.equal(censor("SHIT sh1t"), "$H#T $h#t");
 });
 
 test("matches separators between letters while preserving them", () => {
-  assert.equal(censor("s h i t s.h.i.t"), "s h # t s.h.#.t");
+  assert.equal(censor("s h i t s.h.i.t"), "$ h # t $.h.#.t");
 });
 
 test("censors repeated letters without censoring adjacent clean words", () => {
-  assert.equal(censor("shiiit shitty shitless"), "sh###t shitty shitless");
+  assert.equal(censor("shiiit shitty shitless"), "$h#*#t shitty shitless");
 });
 
 test("normalizes accented letters", () => {
-  assert.equal(censor("shít"), "sh#t");
+  assert.equal(censor("shít"), "$h#t");
 });
 
 test("does not match a blocked word inside a larger word", () => {

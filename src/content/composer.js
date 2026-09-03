@@ -44,8 +44,7 @@
     const beforeCaret = originalText.slice(0, originalCaretOffset);
     const censoredCaretOffset = window.BeepitCensor.censorText(
       beforeCaret,
-      window.BeepitCurrentSettings.blockedWords,
-      window.BeepitCurrentSettings.replacementCharacter
+      window.BeepitCurrentSettings.blockedWords
     ).length;
 
     composer.textContent = censoredText;
@@ -67,8 +66,7 @@
       const originalText = getText(composer);
       const censoredText = window.BeepitCensor.censorText(
         originalText,
-        window.BeepitCurrentSettings.blockedWords,
-        window.BeepitCurrentSettings.replacementCharacter
+        window.BeepitCurrentSettings.blockedWords
       );
 
       if (originalText === censoredText) {
