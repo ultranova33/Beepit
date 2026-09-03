@@ -35,7 +35,12 @@
 
     characters.forEach((character, characterIndex) => {
       const normalizedCharacter = normalizeCharacter(character);
-      if (!normalizedCharacter || (separatorPattern.test(character) && !confusables[character])) {
+      if (!normalizedCharacter) {
+        return;
+      }
+
+      if (separatorPattern.test(character) && !confusables[character]) {
+        previous = "";
         return;
       }
 

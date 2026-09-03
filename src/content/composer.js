@@ -1,6 +1,6 @@
 (() => {
   function getText(composer) {
-    return composer.innerText || composer.textContent || "";
+    return (composer.textContent || "").replace(/\u00a0/g, " ");
   }
 
   function getCaretOffset(composer) {
@@ -59,26 +59,59 @@
     selection.addRange(range);
   }
 
-  function replaceComposerText(composer, originalText, censoredText, originalCaretOffset) {
-    const beforeCaret = originalText.slice(0, originalCaretOffset);
-    const censoredCaretOffset = window.BeepitCensor.censorText(
-      beforeCaret,
-      window.BeepitCurrentSettings.blockedWords
-    ).length;
+  function rangeAtOffsets(composer, startOffset, endOffset) {
+    const range = document.createRange();
+    const walker = document.createTreeWalker(composer, NodeFilter.SHOW_TEXT);
+    let node = walker.nextNode();
+    let position = 0;
+    let startNode = null;
+    let endNode = null;
+    let startInNode = 0;
+    let endInNode = 0;
+
+    while (node) {
+      const nextPosition = position + node.nodeValue.length;
+      if (!startNode && startOffset <= nextPosition) {
+        startNode = node;
+        startInNode = Math.max(0, startOffset - position);
+      }
+      if (endOffset <= nextPosition) {
+        endNode = node;
+        endInNode = Math.max(0, endOffset - position);
+        break;
+      }
+      position = nextPosition;
+      node = walker.nextNode();
+    }
+
+    if (!startNode || !endNode) {
+      return null;
+    }
+
+    range.setStart(startNode, startInNode);
+    range.setEnd(endNode, endInNode);
+    return range;
+  }
+
+  function replaceRange(composer, startOffset, endOffset, replacement) {
+    const range = rangeAtOffsets(composer, startOffset, endOffset);
+    if (!range) {
+      return false;
+    }
 
     composer.focus();
     const selection = window.getSelection();
-    const replacementRange = document.createRange();
-    replacementRange.selectNodeContents(composer);
     selection.removeAllRanges();
-    selection.addRange(replacementRange);
+    selection.addRange(range);
 
-    const replaced = document.execCommand("insertText", false, censoredText);
-    if (!replaced || getText(composer) !== censoredText) {
-      composer.textContent = censoredText;
+    if (document.execCommand("insertText", false, replacement)) {
+      return true;
     }
 
-    setCaretOffset(composer, censoredCaretOffset);
+    range.deleteContents();
+    range.insertNode(document.createTextNode(replacement));
+    composer.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: replacement }));
+    return true;
   }
 
   function sanitizeComposer(composer) {
@@ -87,57 +120,28 @@
     }
 
     const originalText = getText(composer);
-    const censoredText = window.BeepitCensor.censorText(
-      originalText,
-      window.BeepitCurrentSettings.blockedWords
-    );
+    const censoredText = window.BeepitCensor.censorText(originalText, window.BeepitCurrentSettings.blockedWords);
+    const matches = window.BeepitMatcher.findMatches(originalText, window.BeepitCurrentSettings.blockedWords)
+      .map((match) => {
+        const start = Math.min(...match.sourceIndexes);
+        const end = Math.max(...match.sourceIndexes) + 1;
+        return { start, end, replacement: censoredText.slice(start, end) };
+      })
+      .filter((match) => match.replacement !== originalText.slice(match.start, match.end))
+      .sort((left, right) => right.start - left.start);
 
-    if (originalText === censoredText) {
+    if (matches.length === 0) {
       return;
     }
 
     window.BeepitProcessing = true;
     try {
-      replaceComposerText(composer, originalText, censoredText, getCaretOffset(composer));
+      const caretOffset = getCaretOffset(composer);
+      matches.forEach((match) => replaceRange(composer, match.start, match.end, match.replacement));
+      setCaretOffset(composer, caretOffset);
     } finally {
       window.BeepitProcessing = false;
     }
-  }
-
-  function handleBeforeInput(composer, event) {
-    if (!window.BeepitCurrentSettings.enabled || window.BeepitProcessing) {
-      return false;
-    }
-
-    if (event.inputType !== "insertText" && event.inputType !== "insertFromPaste") {
-      return false;
-    }
-
-    const insertedText = event.data;
-    if (typeof insertedText !== "string") {
-      return false;
-    }
-
-    const currentText = getText(composer);
-    const selection = getSelectionOffsets(composer);
-    const proposedText = currentText.slice(0, selection.start) + insertedText + currentText.slice(selection.end);
-    const censoredText = window.BeepitCensor.censorText(
-      proposedText,
-      window.BeepitCurrentSettings.blockedWords
-    );
-
-    if (censoredText === proposedText) {
-      return false;
-    }
-
-    event.preventDefault();
-    window.BeepitProcessing = true;
-    try {
-      replaceComposerText(composer, currentText, censoredText, selection.start + insertedText.length);
-    } finally {
-      window.BeepitProcessing = false;
-    }
-    return true;
   }
 
   function scheduleSanitize(composer) {
@@ -158,10 +162,9 @@
     }
 
     composer.dataset.beepitAttached = "true";
-    composer.addEventListener("input", () => scheduleSanitize(composer));
     composer.addEventListener("compositionend", () => scheduleSanitize(composer));
     sanitizeComposer(composer);
   }
 
-  window.BeepitComposer = { processComposer, sanitizeComposer, scheduleSanitize, handleBeforeInput };
+  window.BeepitComposer = { processComposer, sanitizeComposer, scheduleSanitize };
 })();

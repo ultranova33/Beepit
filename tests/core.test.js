@@ -37,14 +37,24 @@ test("normalizes accented letters", () => {
   assert.equal(censor("shít"), "$h#t");
 });
 
-test("leaves text without a blocked substring unchanged", () => {
+test("censors immediately and catches every blocked occurrence in live text", () => {
+  assert.equal(censor("fuck shit fuck"), "f#ck $h#t f#ck");
+  assert.equal(censor("hello fuck there"), "hello f#ck there");
+  assert.equal(censor("space after fuck works"), "space after f#ck works");
+  assert.equal(censor("bitch what do u think of this shit"), "b#tch what do u think of this $h#t");
+});
+
+test("leaves text without a blocked word unchanged", () => {
   assert.equal(censor("class assignment"), "class assignment");
 });
 
-test("matches blocked words used as substrings", () => {
-  assert.equal(censor("fshit sshit sfuck"), "f$h#t $$h#t sf#ck");
+test("preserves the expected blocking behavior for normal words", () => {
+  assert.equal(censor("Hello, this is a clean message."), "Hello, this is a clean message.");
 });
 
-test("leaves clean text unchanged", () => {
-  assert.equal(censor("Hello, this is a clean message."), "Hello, this is a clean message.");
+test("does not alter URLs or repository links", () => {
+  const link = "https://github.com/ultranova33/Beepit#tg#tg#tg";
+  assert.equal(censor(link), link);
+  assert.equal(censor("github.com/ultranova33/Beepit#tg#tg#tg"), "github.com/ultranova33/Beepit#tg#tg#tg");
+  assert.equal(censor("open " + link + " and say shit"), "open " + link + " and say $h#t");
 });

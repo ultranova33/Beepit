@@ -18,6 +18,11 @@
   }
 
   function start() {
+    if (window.BeepitObserverStarted) {
+      return;
+    }
+
+    window.BeepitObserverStarted = true;
     scan();
     let scanScheduled = false;
     const scheduleScan = () => {
@@ -34,9 +39,6 @@
 
     const observer = new MutationObserver(scheduleScan);
     observer.observe(document.body, { childList: true, subtree: true });
-    window.setInterval(() => {
-      findComposers().forEach(window.BeepitComposer.sanitizeComposer);
-    }, 250);
   }
 
   window.BeepitObserver = { start };

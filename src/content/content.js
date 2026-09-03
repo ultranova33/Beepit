@@ -3,10 +3,13 @@
   window.BeepitProcessing = false;
 
   function refreshSettings() {
-    window.BeepitSettings.getSettings().then((settings) => {
-      window.BeepitCurrentSettings = settings;
-      window.BeepitObserver.start();
-    });
+    window.BeepitSettings.getSettings()
+      .then((settings) => {
+        window.BeepitCurrentSettings = settings;
+      })
+      .catch(() => {
+        window.BeepitCurrentSettings = { ...window.BeepitSettings.defaults };
+      });
   }
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
@@ -27,21 +30,12 @@
     }
 
     window.BeepitComposer.processComposer(composer);
-    if (event.type === "beforeinput") {
-      if (window.BeepitComposer.handleBeforeInput(composer, event)) {
-        event.stopImmediatePropagation();
-      }
-      return;
-    }
     window.BeepitComposer.scheduleSanitize(composer);
   }
 
-  window.addEventListener("input", handleComposerEvent, true);
-  window.addEventListener("beforeinput", handleComposerEvent, true);
-  window.addEventListener("paste", handleComposerEvent, true);
   document.addEventListener("input", handleComposerEvent, true);
-  document.addEventListener("beforeinput", handleComposerEvent, true);
   document.addEventListener("paste", handleComposerEvent, true);
 
+  window.BeepitObserver.start();
   refreshSettings();
 })();
