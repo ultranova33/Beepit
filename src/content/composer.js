@@ -68,18 +68,24 @@
     }
 
     const originalText = getText(composer);
+    if (composer.dataset.beepitLastText === originalText) {
+      return;
+    }
+
     const censoredText = window.BeepitCensor.censorText(
       originalText,
       window.BeepitCurrentSettings.blockedWords
     );
 
     if (originalText === censoredText) {
+      composer.dataset.beepitLastText = originalText;
       return;
     }
 
     window.BeepitProcessing = true;
     try {
       replaceComposerText(composer, originalText, censoredText, getCaretOffset(composer));
+      composer.dataset.beepitLastText = censoredText;
     } finally {
       window.BeepitProcessing = false;
     }

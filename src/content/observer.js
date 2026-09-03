@@ -34,6 +34,9 @@
 
     const observer = new MutationObserver(scheduleScan);
     observer.observe(document.body, { childList: true, subtree: true });
+    window.setInterval(() => {
+      findComposers().forEach(window.BeepitComposer.sanitizeComposer);
+    }, 250);
   }
 
   window.BeepitObserver = { start };
