@@ -81,8 +81,8 @@
     }
 
     composer.dataset.beepitAttached = "true";
-    composer.addEventListener("input", () => sanitizeComposer(composer));
-    composer.addEventListener("compositionend", () => sanitizeComposer(composer));
+    composer.addEventListener("input", () => window.setTimeout(() => sanitizeComposer(composer), 0));
+    composer.addEventListener("compositionend", () => window.setTimeout(() => sanitizeComposer(composer), 0));
     sanitizeComposer(composer);
   }
 

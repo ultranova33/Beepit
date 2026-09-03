@@ -31,9 +31,7 @@
     }
 
     window.BeepitComposer.processComposer(composer);
-    if (event.type === "paste") {
-      window.setTimeout(() => window.BeepitComposer.sanitizeComposer(composer), 0);
-    }
+    window.setTimeout(() => window.BeepitComposer.sanitizeComposer(composer), 0);
   }
 
   document.addEventListener("input", handleComposerEvent, true);
