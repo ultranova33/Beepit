@@ -19,5 +19,20 @@
     });
   });
 
+  function handleComposerEvent(event) {
+    const target = event.target;
+    if (!(target instanceof HTMLElement) || !target.isContentEditable) {
+      return;
+    }
+
+    window.BeepitComposer.processComposer(target);
+    if (event.type === "paste") {
+      window.setTimeout(() => window.BeepitComposer.sanitizeComposer(target), 0);
+    }
+  }
+
+  document.addEventListener("input", handleComposerEvent, true);
+  document.addEventListener("paste", handleComposerEvent, true);
+
   refreshSettings();
 })();

@@ -86,5 +86,5 @@
     sanitizeComposer(composer);
   }
 
-  window.BeepitComposer = { processComposer };
+  window.BeepitComposer = { processComposer, sanitizeComposer };
 })();
