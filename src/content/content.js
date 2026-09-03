@@ -27,6 +27,12 @@
     }
 
     window.BeepitComposer.processComposer(composer);
+    if (event.type === "beforeinput") {
+      if (window.BeepitComposer.handleBeforeInput(composer, event)) {
+        event.stopImmediatePropagation();
+      }
+      return;
+    }
     window.BeepitComposer.scheduleSanitize(composer);
   }
 
