@@ -47,9 +47,19 @@
       window.BeepitCurrentSettings.blockedWords
     ).length;
 
-    composer.textContent = censoredText;
+    composer.focus();
+    const selection = window.getSelection();
+    const replacementRange = document.createRange();
+    replacementRange.selectNodeContents(composer);
+    selection.removeAllRanges();
+    selection.addRange(replacementRange);
+
+    const replaced = document.execCommand("insertText", false, censoredText);
+    if (!replaced || getText(composer) !== censoredText) {
+      composer.textContent = censoredText;
+    }
+
     setCaretOffset(composer, censoredCaretOffset);
-    composer.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: null }));
   }
 
   function sanitizeComposer(composer) {
@@ -81,6 +91,7 @@
     }
 
     composer.dataset.beepitAttached = "true";
+    composer.addEventListener("beforeinput", () => window.setTimeout(() => sanitizeComposer(composer), 0));
     composer.addEventListener("input", () => window.setTimeout(() => sanitizeComposer(composer), 0));
     composer.addEventListener("compositionend", () => window.setTimeout(() => sanitizeComposer(composer), 0));
     sanitizeComposer(composer);
