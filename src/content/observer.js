@@ -12,14 +12,17 @@
   }
 
   function scan() {
-    findComposers().forEach(window.BeepitComposer.processComposer);
+    findComposers().forEach((composer) => {
+      window.BeepitComposer.processComposer(composer);
+      window.BeepitComposer.sanitizeComposer(composer);
+    });
   }
 
   function start() {
     scan();
     const observer = new MutationObserver(scan);
     observer.observe(document.body, { childList: true, subtree: true });
-    window.setInterval(scan, 1500);
+    window.setInterval(scan, 300);
   }
 
   window.BeepitObserver = { start };

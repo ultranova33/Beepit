@@ -85,17 +85,23 @@
     }
   }
 
+  function scheduleSanitize(composer) {
+    [0, 50, 150, 300].forEach((delay) => {
+      window.setTimeout(() => sanitizeComposer(composer), delay);
+    });
+  }
+
   function processComposer(composer) {
     if (composer.dataset.beepitAttached === "true") {
       return;
     }
 
     composer.dataset.beepitAttached = "true";
-    composer.addEventListener("beforeinput", () => window.setTimeout(() => sanitizeComposer(composer), 0));
-    composer.addEventListener("input", () => window.setTimeout(() => sanitizeComposer(composer), 0));
-    composer.addEventListener("compositionend", () => window.setTimeout(() => sanitizeComposer(composer), 0));
+    composer.addEventListener("beforeinput", () => scheduleSanitize(composer));
+    composer.addEventListener("input", () => scheduleSanitize(composer));
+    composer.addEventListener("compositionend", () => scheduleSanitize(composer));
     sanitizeComposer(composer);
   }
 
-  window.BeepitComposer = { processComposer, sanitizeComposer };
+  window.BeepitComposer = { processComposer, sanitizeComposer, scheduleSanitize };
 })();

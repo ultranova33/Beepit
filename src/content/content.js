@@ -31,7 +31,7 @@
     }
 
     window.BeepitComposer.processComposer(composer);
-    window.setTimeout(() => window.BeepitComposer.sanitizeComposer(composer), 0);
+    window.BeepitComposer.scheduleSanitize(composer);
   }
 
   document.addEventListener("input", handleComposerEvent, true);
