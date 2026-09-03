@@ -86,9 +86,15 @@
   }
 
   function scheduleSanitize(composer) {
-    [0, 50, 150, 300].forEach((delay) => {
-      window.setTimeout(() => sanitizeComposer(composer), delay);
-    });
+    if (composer.dataset.beepitSanitizeScheduled === "true") {
+      return;
+    }
+
+    composer.dataset.beepitSanitizeScheduled = "true";
+    window.setTimeout(() => {
+      composer.dataset.beepitSanitizeScheduled = "false";
+      sanitizeComposer(composer);
+    }, 0);
   }
 
   function processComposer(composer) {
@@ -97,7 +103,6 @@
     }
 
     composer.dataset.beepitAttached = "true";
-    composer.addEventListener("beforeinput", () => scheduleSanitize(composer));
     composer.addEventListener("input", () => scheduleSanitize(composer));
     composer.addEventListener("compositionend", () => scheduleSanitize(composer));
     sanitizeComposer(composer);

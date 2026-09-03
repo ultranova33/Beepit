@@ -14,15 +14,26 @@
   function scan() {
     findComposers().forEach((composer) => {
       window.BeepitComposer.processComposer(composer);
-      window.BeepitComposer.sanitizeComposer(composer);
     });
   }
 
   function start() {
     scan();
-    const observer = new MutationObserver(scan);
+    let scanScheduled = false;
+    const scheduleScan = () => {
+      if (scanScheduled) {
+        return;
+      }
+
+      scanScheduled = true;
+      window.setTimeout(() => {
+        scanScheduled = false;
+        scan();
+      }, 100);
+    };
+
+    const observer = new MutationObserver(scheduleScan);
     observer.observe(document.body, { childList: true, subtree: true });
-    window.setInterval(scan, 300);
   }
 
   window.BeepitObserver = { start };
