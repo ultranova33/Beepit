@@ -20,13 +20,9 @@
   });
 
   function handleComposerEvent(event) {
-    const target = event.target;
-    if (!(target instanceof Element)) {
-      return;
-    }
-
-    const composer = target.closest("[contenteditable=\"true\"]");
-    if (!composer || !composer.isContentEditable) {
+    const path = typeof event.composedPath === "function" ? event.composedPath() : [event.target];
+    const composer = path.find((element) => element instanceof Element && element.matches("[contenteditable=\"true\"]"));
+    if (!composer) {
       return;
     }
 
@@ -34,7 +30,11 @@
     window.BeepitComposer.scheduleSanitize(composer);
   }
 
+  window.addEventListener("input", handleComposerEvent, true);
+  window.addEventListener("beforeinput", handleComposerEvent, true);
+  window.addEventListener("paste", handleComposerEvent, true);
   document.addEventListener("input", handleComposerEvent, true);
+  document.addEventListener("beforeinput", handleComposerEvent, true);
   document.addEventListener("paste", handleComposerEvent, true);
 
   refreshSettings();
