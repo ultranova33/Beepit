@@ -53,9 +53,9 @@ Whitespace, punctuation, symbols, underscores, and line breaks are ignored in th
 
 Repeated consecutive characters are collapsed for matching. The source index map still contains every original character, so `shiiit` is matched as `shit` and all three original vowels are replaced.
 
-### Whole-word boundaries
+### Substring matching
 
-A blocked word is not matched inside a larger letter-or-number sequence. For example, a blocked `shit` does not match `shitless`. Separators are allowed inside a match, so `s h i t` can still be detected.
+A blocked word is matched even inside a larger letter-or-number sequence. For example, `fshit`, `sshit`, and `sfuck` are detected, as are `shitless` and `shitty`. Separators are allowed inside a match, so `s h i t` can still be detected.
 
 ### Fuzzy matching
 

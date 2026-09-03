@@ -30,15 +30,19 @@ test("matches separators between letters while preserving them", () => {
 });
 
 test("censors repeated letters without censoring adjacent clean words", () => {
-  assert.equal(censor("shiiit shitty shitless"), "$h#*#t shitty shitless");
+  assert.equal(censor("shiiit shitty shitless"), "$h#*#t $h#tty $h#tless");
 });
 
 test("normalizes accented letters", () => {
   assert.equal(censor("shít"), "$h#t");
 });
 
-test("does not match a blocked word inside a larger word", () => {
+test("leaves text without a blocked substring unchanged", () => {
   assert.equal(censor("class assignment"), "class assignment");
+});
+
+test("matches blocked words used as substrings", () => {
+  assert.equal(censor("fshit sshit sfuck"), "f$h#t $$h#t sf#ck");
 });
 
 test("leaves clean text unchanged", () => {

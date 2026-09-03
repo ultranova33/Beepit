@@ -8,7 +8,6 @@
   function findMatches(text, blockedWords) {
     const normalizedText = window.BeepitNormalize.normalizeForMatching(text);
     const normalizedValues = normalizedText.map((part) => part.value).join("");
-    const sourceCharacters = Array.from(text);
     const matches = [];
 
     const candidates = blockedWords
@@ -23,15 +22,6 @@
       }
 
       const end = start + candidate.normalized.length - 1;
-      const firstSourceIndex = normalizedText[start].sourceIndexes[0];
-      const lastSourceIndex = normalizedText[end].sourceIndexes.at(-1);
-      const before = sourceCharacters[firstSourceIndex - 1];
-      const after = sourceCharacters[lastSourceIndex + 1];
-
-      if (window.BeepitNormalize.isWordCharacter(before) || window.BeepitNormalize.isWordCharacter(after)) {
-        continue;
-      }
-
       matches.push({ start, end, sourceIndexes: normalizedText.slice(start, end + 1).flatMap((part) => part.sourceIndexes) });
       start = end;
     }
