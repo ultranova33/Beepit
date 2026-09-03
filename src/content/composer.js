@@ -52,34 +52,38 @@
     composer.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: null }));
   }
 
+  function sanitizeComposer(composer) {
+    if (window.BeepitProcessing || !window.BeepitCurrentSettings.enabled) {
+      return;
+    }
+
+    const originalText = getText(composer);
+    const censoredText = window.BeepitCensor.censorText(
+      originalText,
+      window.BeepitCurrentSettings.blockedWords
+    );
+
+    if (originalText === censoredText) {
+      return;
+    }
+
+    window.BeepitProcessing = true;
+    try {
+      replaceComposerText(composer, originalText, censoredText, getCaretOffset(composer));
+    } finally {
+      window.BeepitProcessing = false;
+    }
+  }
+
   function processComposer(composer) {
     if (composer.dataset.beepitAttached === "true") {
       return;
     }
 
     composer.dataset.beepitAttached = "true";
-    composer.addEventListener("input", () => {
-      if (window.BeepitProcessing || !window.BeepitCurrentSettings.enabled) {
-        return;
-      }
-
-      const originalText = getText(composer);
-      const censoredText = window.BeepitCensor.censorText(
-        originalText,
-        window.BeepitCurrentSettings.blockedWords
-      );
-
-      if (originalText === censoredText) {
-        return;
-      }
-
-      window.BeepitProcessing = true;
-      try {
-        replaceComposerText(composer, originalText, censoredText, getCaretOffset(composer));
-      } finally {
-        window.BeepitProcessing = false;
-      }
-    });
+    composer.addEventListener("input", () => sanitizeComposer(composer));
+    composer.addEventListener("compositionend", () => sanitizeComposer(composer));
+    sanitizeComposer(composer);
   }
 
   window.BeepitComposer = { processComposer };

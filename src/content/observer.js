@@ -5,14 +5,10 @@
   }
 
   function findComposers() {
-    const footerComposers = Array.from(document.querySelectorAll("footer [contenteditable=\"true\"]"));
-    if (footerComposers.length > 0) {
-      return footerComposers.filter(visible);
-    }
-
-    return Array.from(document.querySelectorAll("[contenteditable=\"true\"][role=\"textbox\"]"))
-      .filter(visible)
-      .slice(-1);
+    const composers = Array.from(document.querySelectorAll("[contenteditable=\"true\"]"))
+      .filter(visible);
+    const footerComposers = composers.filter((composer) => composer.closest("footer"));
+    return (footerComposers.length > 0 ? footerComposers : composers).slice(-2);
   }
 
   function scan() {
