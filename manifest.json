@@ -4,7 +4,10 @@
   "version": "1.0.0",
   "description": "Censors vowels in selected words before WhatsApp Web text messages are sent.",
   "permissions": ["storage"],
-  "host_permissions": ["https://web.whatsapp.com/*"],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://www.instagram.com/*"
+  ],
   "content_scripts": [
     {
       "matches": ["https://web.whatsapp.com/*"],
@@ -12,10 +15,25 @@
         "src/core/normalize.js",
         "src/core/matcher.js",
         "src/core/censor.js",
+        "src/core/regional-words.js",
         "src/core/settings.js",
         "src/content/composer.js",
         "src/content/observer.js",
         "src/content/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.instagram.com/*"],
+      "js": [
+        "src/core/normalize.js",
+        "src/core/matcher.js",
+        "src/core/censor.js",
+        "src/core/regional-words.js",
+        "src/core/settings.js",
+        "src/content/composer.js",
+        "src/content/instagram-observer.js",
+        "src/content/instagram-content.js"
       ],
       "run_at": "document_idle"
     }

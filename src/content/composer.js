@@ -1,9 +1,21 @@
 (() => {
+  function isTextarea(composer) {
+    return composer instanceof HTMLTextAreaElement;
+  }
+
   function getText(composer) {
+    if (isTextarea(composer)) {
+      return composer.value;
+    }
+
     return (composer.textContent || "").replace(/\u00a0/g, " ");
   }
 
   function getCaretOffset(composer) {
+    if (isTextarea(composer)) {
+      return composer.selectionStart || 0;
+    }
+
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0 || !composer.contains(selection.anchorNode)) {
       return getText(composer).length;
@@ -16,6 +28,10 @@
   }
 
   function getSelectionOffsets(composer) {
+    if (isTextarea(composer)) {
+      return { start: composer.selectionStart || 0, end: composer.selectionEnd || 0 };
+    }
+
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0 || !composer.contains(selection.anchorNode)) {
       const offset = getText(composer).length;
@@ -35,6 +51,11 @@
   }
 
   function setCaretOffset(composer, offset) {
+    if (isTextarea(composer)) {
+      composer.setSelectionRange(offset, offset);
+      return;
+    }
+
     const selection = window.getSelection();
     const range = document.createRange();
     let remaining = offset;
@@ -94,6 +115,12 @@
   }
 
   function replaceRange(composer, startOffset, endOffset, replacement) {
+    if (isTextarea(composer)) {
+      composer.focus();
+      composer.setRangeText(replacement, startOffset, endOffset, "preserve");
+      return true;
+    }
+
     const range = rangeAtOffsets(composer, startOffset, endOffset);
     if (!range) {
       return false;

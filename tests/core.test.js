@@ -8,10 +8,13 @@ global.window = global;
 [
   "src/core/normalize.js",
   "src/core/matcher.js",
-  "src/core/censor.js"
+  "src/core/censor.js",
+  "src/core/regional-words.js",
+  "src/core/settings.js"
 ].forEach((file) => vm.runInThisContext(fs.readFileSync(path.join(__dirname, "..", file), "utf8"), { filename: file }));
 
 const blockedWords = ["shit", "fuck", "bitch", "asshole"];
+const mergedBlockedWords = BeepitSettings.defaults.blockedWords;
 
 function censor(text) {
   return BeepitCensor.censorText(text, blockedWords);
@@ -57,4 +60,14 @@ test("does not alter URLs or repository links", () => {
   assert.equal(censor(link), link);
   assert.equal(censor("github.com/ultranova33/Beepit#tg#tg#tg"), "github.com/ultranova33/Beepit#tg#tg#tg");
   assert.equal(censor("open " + link + " and say shit"), "open " + link + " and say $h#t");
+});
+
+test("censors Tamil and Hindi transliterated words", () => {
+  const regionalWords = window.BeepitRegionalBlockedWords;
+  assert.ok(mergedBlockedWords.includes("chutiya"));
+  assert.ok(mergedBlockedWords.includes("watha"));
+  assert.ok(mergedBlockedWords.includes("bhenchod"));
+  assert.equal(BeepitCensor.censorText("chutiya gandu watha", mergedBlockedWords), "ch#t*y@ g@nd# w@th@");
+  assert.equal(BeepitCensor.censorText("bhenchod bakchod maa ki chut", regionalWords), "bh#nch*d b@kch#d m@@ k# ch*t");
+  assert.equal(BeepitCensor.censorText("chutiya and fuck", mergedBlockedWords), "ch#t*y@ and f#ck");
 });

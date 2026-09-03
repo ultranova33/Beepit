@@ -15,13 +15,21 @@
       "damn", "damns", "dammit", "damnit", "goddamn", "goddamned", "goddammit", "hell", "crap", "crappy", "craps", "bloody", "bollocks", "bollock", "bugger", "buggered", "buggering", "buggers",
       "arse", "arses", "arsehole", "arseholes", "arsewipe", "arsewipes", "wanker", "wankers", "wanking", "tosser", "tossers", "tosspot", "tosspots", "knob", "knobs", "knobhead", "knobheads", "prat", "prats", "git", "gits", "minger", "mingers", "munter", "munters", "sod", "sods", "sodoff", "shag", "shagged", "shagging",
       "horny", "hornier", "horniness", "boner", "boners", "blowjob", "blowjobs", "handjob", "handjobs", "rimjob", "rimjobs", "hump", "humped", "humping", "screw", "screwed", "screwing", "screwy", "bang", "banged", "banging", "dildo", "dildos", "tit", "tits", "titty", "titties", "boob", "boobs", "booby", "ballsack", "ballsacks", "nutsack", "nutsacks", "nutjob", "nutjobs", "cum", "cums", "cumming", "jizz", "jizzed", "jizzing", "clit", "clits",
-      "fuk", "fukk", "fuked", "fuking", "fukin", "fukkin", "fuckin", "shyt", "shiit", "shii", "bich", "biatch", "bish", "pussi", "pussay", "pusey", "assh0le", "assho1e", "a55hole", "a55", "d1ck", "d!ck", "dck", "c0ck", "c0cksucker", "pu55y", "p!ss", "p1ss"
+      "fuk", "fukk", "fuked", "fuking", "fukin", "fukkin", "fuckin", "shyt", "shiit", "shii", "bich", "biatch", "bish", "pussi", "pussay", "pusey", "assh0le", "assho1e", "a55hole", "a55", "d1ck", "d!ck", "dck", "c0ck", "c0cksucker", "pu55y", "p!ss", "p1ss",
+      ...window.BeepitRegionalBlockedWords
     ]
   };
 
   function getSettings() {
     return new Promise((resolve) => {
-      chrome.storage.local.get(defaults, (stored) => resolve({ ...defaults, ...stored }));
+      chrome.storage.local.get(defaults, (stored) => {
+        const savedWords = stored && Array.isArray(stored.blockedWords) ? stored.blockedWords : [];
+        resolve({
+          ...defaults,
+          ...stored,
+          blockedWords: [...new Set([...defaults.blockedWords, ...savedWords])]
+        });
+      });
     });
   }
 
